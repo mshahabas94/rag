@@ -1,0 +1,70 @@
+# Core Dependencies
+python-dotenv
+pydantic
+sqlalchemy
+pymysql
+psutil
+
+# Vanna.ai for Text-to-SQL
+vanna[all]==0.5.5
+
+# Local LLM Support
+llama-cpp-python
+
+# LangChain for RAG
+langchain
+langchain-community
+langchain-huggingface
+
+# Vector Database
+qdrant-client==1.7.0
+chromadb==0.4.18
+faiss-cpu==1.7.4
+
+# Document Processing
+pypdf==3.17.4
+python-docx==1.1.0
+unstructured==0.11.8
+markdown==3.5.1
+
+# Local Embeddings
+sentence-transformers
+transformers
+torch
+
+# Security and Validation
+sqlparse==0.4.4
+cryptography==41.0.7
+
+# Web Framework (Optional - for API)
+fastapi
+uvicorn
+streamlit
+
+# Async Support
+asyncio-mqtt==0.16.1
+aiofiles==23.2.1
+
+# Monitoring and Logging
+prometheus-client==0.19.0
+structlog==23.2.0
+
+# Development and Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+black==23.11.0
+flake8==6.1.0
+mypy==1.7.1
+
+# Jupyter (for development)
+jupyter==1.0.0
+ipykernel==6.26.0
+
+# Data Processing
+pandas==2.1.4
+numpy==1.24.4
+
+# HTTP Requests
+requests
+httpx
