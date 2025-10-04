@@ -69,8 +69,11 @@ class QdrantBridgeService:
             
             logger.info(f"Processing RAG query with existing pipeline: {request.question[:100]}...")
             
+            # Build query with conversation history for context
+            query_with_context = self._build_contextual_query(request.question, request.conversation_history)
+            
             # Use your existing RAG pipeline
-            result = self._rag_pipeline(request.question)
+            result = self._rag_pipeline(query_with_context)
             
             # Convert to our RAGResult format
             sources = []
@@ -99,6 +102,41 @@ class QdrantBridgeService:
                 success=False,
                 error=str(e)
             )
+    
+    def _build_contextual_query(self, question: str, conversation_history: Optional[Any]) -> str:
+        """Build a query that includes conversation context."""
+        try:
+            if not conversation_history:
+                return question
+            
+            # Convert conversation history to context string
+            context_parts = []
+            
+            if isinstance(conversation_history, str):
+                # Already formatted as string
+                context_parts.append(conversation_history)
+            elif isinstance(conversation_history, list):
+                # Convert list of messages to context
+                recent_messages = conversation_history[-4:] if len(conversation_history) > 4 else conversation_history
+                for msg in recent_messages:
+                    role = msg.get('role', 'user')
+                    content = msg.get('content', '')
+                    if content:
+                        prefix = "Human" if role == 'user' else "Assistant"
+                        context_parts.append(f"{prefix}: {content}")
+            
+            # Build contextual query
+            if context_parts:
+                context_str = "\n".join(context_parts)
+                contextual_query = f"Given this conversation context:\n{context_str}\n\nCurrent question: {question}"
+                logger.info("Added conversation context to query")
+                return contextual_query
+            
+            return question
+            
+        except Exception as e:
+            logger.warning(f"Failed to build contextual query: {e}")
+            return question
     
     def _calculate_confidence(self, result: Dict[str, Any]) -> float:
         """Calculate confidence score for the result."""

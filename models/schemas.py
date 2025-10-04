@@ -29,6 +29,7 @@ class ChatRequest(BaseModel):
     customer_id: Optional[str] = Field(None, description="Customer ID for database queries")
     customer_email: Optional[str] = Field(None, description="Customer email for database queries")
     session_id: Optional[str] = Field(None, description="Session ID for conversation tracking")
+    conversation_history: Optional[Union[List[Dict[str, str]], str]] = Field(None, description="Previous conversation messages for context")
     
     @validator('question')
     def validate_question(cls, v):
@@ -54,6 +55,7 @@ class RAGQueryRequest(BaseModel):
     """Request for RAG-based query."""
     question: str = Field(..., description="Question about policies/knowledge base")
     include_sources: bool = Field(True, description="Whether to include source documents")
+    conversation_history: Optional[Union[List[Dict[str, str]], str]] = Field(None, description="Previous conversation for context")
 
 # Response Models
 

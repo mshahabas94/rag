@@ -83,14 +83,11 @@ initialize_session_state()
 
 # Initialize chatbot on first run
 @st.cache_resource
-def initialize_chatbot():
-    """Initialize the hybrid chatbot (cached across reruns)."""
-    async def init():
-        chatbot = HybridChatbot()
-        return await chatbot.initialize()
-    
-    success = asyncio.run(init())
-    return success
+def get_chatbot():
+    """Get the hybrid chatbot instance (cached across reruns)."""
+    chatbot = HybridChatbot()
+    asyncio.run(chatbot.initialize())
+    return chatbot
 
 def create_new_session(session_name: Optional[str] = None) -> str:
     """Create a new chat session."""
@@ -186,16 +183,35 @@ def format_message(msg: Dict[str, Any], show_metadata: bool = True):
 async def process_user_message(user_input: str):
     """Process user message through the hybrid chatbot."""
     try:
-        # Create chat request
+        # Get conversation history for context
+        conversation_history = []
+        if st.session_state.conversation_memory:
+            memory_vars = st.session_state.conversation_memory.load_memory_variables({})
+            if 'history' in memory_vars:
+                # Convert to list of dicts if it's messages
+                history_messages = memory_vars['history']
+                if isinstance(history_messages, str):
+                    conversation_history = history_messages
+                else:
+                    # Convert LangChain messages to simple format
+                    conversation_history = []
+                    for msg in history_messages:
+                        conversation_history.append({
+                            'role': 'user' if hasattr(msg, '__class__') and 'Human' in msg.__class__.__name__ else 'assistant',
+                            'content': msg.content if hasattr(msg, 'content') else str(msg)
+                        })
+        
+        # Create chat request with conversation history
         request = ChatRequest(
             question=user_input,
             customer_id=st.session_state.customer_id,
             customer_email=st.session_state.customer_email,
-            session_id=st.session_state.current_session_id
+            session_id=st.session_state.current_session_id,
+            conversation_history=conversation_history
         )
         
-        # Process through chatbot
-        chatbot=HybridChatbot()
+        # Process through cached chatbot instance
+        chatbot = get_chatbot()
         response = await chatbot.process_chat_request(request)
         
         return response
@@ -298,8 +314,18 @@ def render_sidebar():
         
         # Health status
         with st.expander("System Status"):
-            chatbot = HybridChatbot()
-            health = chatbot.get_health_status()
+            try:
+                chatbot = get_chatbot()
+                health = chatbot.get_health_status()
+            except:
+                # If chatbot not initialized, show error state
+                health = type('obj', (object,), {
+                    'status': 'error',
+                    'database_healthy': False,
+                    'vanna_healthy': False,
+                    'rag_healthy': False,
+                    'uptime': 0
+                })()
             
             st.metric("Status", health.status.upper())
             
@@ -319,12 +345,12 @@ def render_main_chat():
     # Initialize chatbot if not done
     if not st.session_state.initialized:
         with st.spinner("Initializing chatbot..."):
-            success = initialize_chatbot()
-            if success:
+            try:
+                get_chatbot()
                 st.session_state.initialized = True
                 st.success("Chatbot initialized successfully!")
-            else:
-                st.error("Failed to initialize chatbot. Check logs for details.")
+            except Exception as e:
+                st.error(f"Failed to initialize chatbot: {e}")
                 return
     
     # Create first session if none exists
