@@ -172,7 +172,18 @@ class VannaService:
             # Execute SQL query
             logger.info(f"Executing SQL query: {secured_sql[:200]}...")
             
-            execution_result = self.db_config.execute_safe_query(secured_sql)
+            # Prepare bind parameters from request
+            params = {}
+            if request.customer_id:
+                # Convert customer_id to int if it's a numeric string
+                try:
+                    params['customer_id'] = int(request.customer_id) if isinstance(request.customer_id, str) and request.customer_id.isdigit() else request.customer_id
+                except (ValueError, AttributeError):
+                    params['customer_id'] = request.customer_id
+            if request.customer_email:
+                params['customer_email'] = request.customer_email
+            
+            execution_result = self.db_config.execute_safe_query(secured_sql, params)
             
             processing_time = time.time() - start_time
             
