@@ -222,6 +222,50 @@ class ChatDatabaseService:
         except Exception as e:
             logger.error(f"Failed to clear messages from session {session_id}: {e}")
             return False
+    
+    def update_session_metadata(self, session_id: str, metadata: Dict[str, Any]) -> bool:
+        """Update the metadata of a chat session."""
+        try:
+            with db_config.get_connection() as conn:
+                query = text("""
+                    UPDATE chat_sessions
+                    SET metadata = :metadata
+                    WHERE session_id = :session_id
+                """)
+                
+                result = conn.execute(query, {
+                    'session_id': session_id,
+                    'metadata': json.dumps(metadata)
+                })
+                
+                conn.commit()
+                logger.info(f"Updated metadata for session {session_id}")
+                return result.rowcount > 0
+                
+        except Exception as e:
+            logger.error(f"Failed to update session metadata for {session_id}: {e}")
+            return False
+    
+    def get_session_metadata(self, session_id: str) -> Optional[Dict[str, Any]]:
+        """Get the metadata of a chat session."""
+        try:
+            with db_config.get_connection() as conn:
+                query = text("""
+                    SELECT metadata
+                    FROM chat_sessions
+                    WHERE session_id = :session_id
+                """)
+                
+                result = conn.execute(query, {'session_id': session_id})
+                row = result.fetchone()
+                
+                if row and row[0]:
+                    return json.loads(row[0])
+                return {}
+                
+        except Exception as e:
+            logger.error(f"Failed to get session metadata for {session_id}: {e}")
+            return {}
 
 # Global service instance
 chat_db_service = ChatDatabaseService()
