@@ -31,10 +31,12 @@ from models.schemas import (
 from services.vanna_service import vanna_service
 from services.rag_service import rag_service
 from services.intent_classifier import intent_classifier
+from services.chat_database_service import chat_db_service
 from utils.security import (
     validate_sql_security, enforce_rate_limit, log_security_event
 )
 from utils.query_logger import query_logger, system_monitor
+from utils.customer_extractor import extract_customer_info
 
 class HybridChatbot:
     """
@@ -124,8 +126,42 @@ class HybridChatbot:
                         start_time
                     )
             
+            # Extract customer info from message
+            extracted_info = extract_customer_info(request.question)
+            
+            # Get session metadata to check for stored customer info
+            session_metadata = {}
+            if session_id:
+                try:
+                    session_metadata = chat_db_service.get_session_metadata(session_id) or {}
+                except:
+                    session_metadata = {}
+            
+            # Combine customer info (priority: request > extracted > session)
+            customer_id = request.customer_id or extracted_info.get('customer_id') or session_metadata.get('customer_id')
+            customer_email = request.customer_email or extracted_info.get('customer_email') or session_metadata.get('customer_email')
+            
+            # Update request with resolved customer info
+            request.customer_id = customer_id
+            request.customer_email = customer_email
+            
+            # If new customer info was extracted, update session metadata
+            if (extracted_info.get('customer_id') or extracted_info.get('customer_email')) and session_id:
+                try:
+                    # Merge with existing metadata
+                    updated_metadata = dict(session_metadata)
+                    if extracted_info.get('customer_id'):
+                        updated_metadata['customer_id'] = extracted_info['customer_id']
+                    if extracted_info.get('customer_email'):
+                        updated_metadata['customer_email'] = extracted_info['customer_email']
+                    
+                    chat_db_service.update_session_metadata(session_id, updated_metadata)
+                    logger.info(f"Updated session {session_id} with customer info: customer_id={customer_id}, customer_email={customer_email}")
+                except Exception as e:
+                    logger.warning(f"Failed to update session metadata: {e}")
+            
             # Rate limiting check
-            rate_limit_id = request.customer_id or request.customer_email or "anonymous"
+            rate_limit_id = customer_id or customer_email or "anonymous"
             allowed, rate_info = enforce_rate_limit(rate_limit_id)
             
             if not allowed:
