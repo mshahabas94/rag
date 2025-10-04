@@ -233,7 +233,10 @@ class HybridChatbot:
                 logger.warning(f"SQL processing failed: {sql_result.error}")
                 
                 # Try RAG as fallback for better user experience
-                rag_request = RAGQueryRequest(question=request.question)
+                rag_request = RAGQueryRequest(
+                    question=request.question,
+                    conversation_history=request.conversation_history
+                )
                 rag_result = rag_service.process_rag_query(rag_request, session_id)
                 
                 if rag_result.success:
@@ -280,10 +283,11 @@ class HybridChatbot:
         start_time = time.time()
         
         try:
-            # Create RAG request
+            # Create RAG request with conversation history
             rag_request = RAGQueryRequest(
                 question=request.question,
-                include_sources=True
+                include_sources=True,
+                conversation_history=request.conversation_history
             )
             
             # Process with RAG service
@@ -410,7 +414,10 @@ class HybridChatbot:
         # Try both services and see which one works better
         try:
             # First try RAG (safer for unknown queries)
-            rag_request = RAGQueryRequest(question=request.question)
+            rag_request = RAGQueryRequest(
+                question=request.question,
+                conversation_history=request.conversation_history
+            )
             rag_result = rag_service.process_rag_query(rag_request, session_id)
             
             processing_time = time.time() - start_time
@@ -477,7 +484,8 @@ class HybridChatbot:
             
             rag_request = RAGQueryRequest(
                 question=policy_question,
-                include_sources=True
+                include_sources=True,
+                conversation_history=request.conversation_history
             )
             return rag_service.process_rag_query(rag_request, session_id)
         except Exception as e:
