@@ -25,7 +25,9 @@ class IntentClassifier:
             'status': ['status', 'state', 'processing', 'shipped', 'delivered', 'cancelled'],
             'temporal': ['recent', 'last', 'this month', 'this year', 'yesterday', 'today'],
             'quantitative': ['how many', 'count', 'number of', 'sum', 'average', 'total'],
-            'listing': ['show', 'list', 'display', 'find', 'search', 'get my']
+            'listing': ['show', 'list', 'display', 'find', 'search', 'get my'],
+            'comparative': ['most expensive', 'cheapest', 'highest', 'lowest', 'largest', 'smallest', 'biggest', 'best', 'worst'],
+            'specific_fields': ['order number', 'order id', 'increment_id', 'entity_id', 'customer_id', 'grand_total']
         }
         
         self.rag_keywords = {
@@ -124,7 +126,9 @@ class IntentClassifier:
                     'status': 0.2,
                     'temporal': 0.15,
                     'quantitative': 0.25,
-                    'listing': 0.2
+                    'listing': 0.2,
+                    'comparative': 0.35,  # Strong indicator for SQL
+                    'specific_fields': 0.4  # Very strong indicator for SQL
                 }
                 score += category_score * weights.get(category, 0.1)
         
@@ -142,6 +146,22 @@ class IntentClassifier:
         personal_pronouns = ['my ', ' my ', 'i ', ' i ', ' me ', 'me ']
         if any(pronoun in question for pronoun in personal_pronouns):
             score += 0.2
+        
+        # Strong SQL patterns that combine question words with order data
+        sql_data_patterns = [
+            'what is the order number',
+            'which order',
+            'what order',
+            'show order',
+            'get order',
+            'most expensive order',
+            'cheapest order',
+            'highest order',
+            'lowest order'
+        ]
+        for pattern in sql_data_patterns:
+            if pattern in question:
+                score += 0.5  # Very strong indicator
         
         return min(1.0, score)
     

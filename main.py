@@ -644,15 +644,18 @@ class HybridChatbot:
             if brief:
                 return f"Found {len(orders)} orders"
             
+            # Determine display limit based on number of orders
+            display_limit = 20 if len(orders) <= 20 else 10
+            
             formatted_orders = []
-            for order in orders[:5]:  # Limit to first 5
+            for order in orders[:display_limit]:
                 order_str = self._format_single_order(order)
                 formatted_orders.append(order_str)
             
             result = "\n".join(formatted_orders)
             
-            if len(orders) > 5:
-                result += f"\n... and {len(orders) - 5} more orders"
+            if len(orders) > display_limit:
+                result += f"\n... and {len(orders) - display_limit} more orders"
             
             return result
             

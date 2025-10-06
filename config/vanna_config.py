@@ -169,7 +169,33 @@ class VannaConfig:
             },
             {
                 "question": "What's my most recent order total?",
-                "sql": "SELECT grand_total FROM sales_order WHERE customer_id = :customer_id ORDER BY created_at DESC LIMIT 1"
+                "sql": "SELECT increment_id, grand_total, status, created_at FROM sales_order WHERE customer_id = :customer_id ORDER BY created_at DESC LIMIT 1"
+            },
+            
+            # Comparative queries - most/least expensive
+            {
+                "question": "What is my most expensive order?",
+                "sql": "SELECT increment_id, grand_total, status, created_at FROM sales_order WHERE customer_id = :customer_id AND status IN ('complete', 'processing') ORDER BY grand_total DESC LIMIT 1"
+            },
+            {
+                "question": "Which is my most expensive order?",
+                "sql": "SELECT increment_id, grand_total, status, created_at FROM sales_order WHERE customer_id = :customer_id AND status IN ('complete', 'processing') ORDER BY grand_total DESC LIMIT 1"
+            },
+            {
+                "question": "What is the order number of my most expensive order?",
+                "sql": "SELECT increment_id, grand_total, status, created_at FROM sales_order WHERE customer_id = :customer_id AND status IN ('complete', 'processing') ORDER BY grand_total DESC LIMIT 1"
+            },
+            {
+                "question": "Show me my cheapest order",
+                "sql": "SELECT increment_id, grand_total, status, created_at FROM sales_order WHERE customer_id = :customer_id AND status IN ('complete', 'processing') ORDER BY grand_total ASC LIMIT 1"
+            },
+            {
+                "question": "What is my highest order amount?",
+                "sql": "SELECT increment_id, grand_total, status, created_at FROM sales_order WHERE customer_id = :customer_id AND status IN ('complete', 'processing') ORDER BY grand_total DESC LIMIT 1"
+            },
+            {
+                "question": "Which order has the lowest total?",
+                "sql": "SELECT increment_id, grand_total, status, created_at FROM sales_order WHERE customer_id = :customer_id AND status IN ('complete', 'processing') ORDER BY grand_total ASC LIMIT 1"
             }
         ]
         
