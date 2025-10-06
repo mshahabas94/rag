@@ -589,31 +589,54 @@ class HybridChatbot:
             return f"Found {sql_result.row_count} results."
     
     def _format_single_order(self, order: Dict[str, Any]) -> str:
-        """Format a single order record."""
+        """Format a single order record or aggregate result."""
         try:
             parts = []
             
-            # Order identification
-            if order.get('increment_id'):
-                parts.append(f"Order #{order['increment_id']}")
+            # Check if this is an actual order record or an aggregate result
+            is_order_record = any(key in order for key in ['increment_id', 'entity_id', 'order_id'])
             
-            # Status
-            if order.get('status'):
-                parts.append(f"Status: {order['status']}")
-            
-            # Total
-            if order.get('grand_total'):
-                parts.append(f"Total: ${order['grand_total']}")
-            
-            # Date
-            if order.get('created_at'):
-                parts.append(f"Date: {order['created_at']}")
+            if is_order_record:
+                # Format as order record
+                # Order identification
+                if order.get('increment_id'):
+                    parts.append(f"Order #{order['increment_id']}")
+                
+                # Status
+                if order.get('status'):
+                    parts.append(f"Status: {order['status']}")
+                
+                # Total
+                if order.get('grand_total'):
+                    parts.append(f"Total: ${order['grand_total']}")
+                
+                # Date
+                if order.get('created_at'):
+                    parts.append(f"Date: {order['created_at']}")
+            else:
+                # Format as generic result (aggregate queries, etc.)
+                for key, value in order.items():
+                    if value is not None:
+                        # Format monetary values
+                        if any(keyword in key.lower() for keyword in ['total', 'amount', 'price', 'cost', 'spent']):
+                            parts.append(f"{self._format_field_name(key)}: ${value:,.2f}")
+                        # Format count values
+                        elif any(keyword in key.lower() for keyword in ['count', 'number', 'qty', 'quantity']):
+                            parts.append(f"{self._format_field_name(key)}: {int(value)}")
+                        # Format other values
+                        else:
+                            parts.append(f"{self._format_field_name(key)}: {value}")
             
             return " | ".join(parts) if parts else "Order information available"
             
         except Exception as e:
             logger.error(f"Error formatting single order: {e}")
             return "Order details available"
+    
+    def _format_field_name(self, field_name: str) -> str:
+        """Convert snake_case field names to readable format."""
+        # Replace underscores with spaces and capitalize
+        return ' '.join(word.capitalize() for word in field_name.replace('_', ' ').split())
     
     def _format_multiple_orders(self, orders: List[Dict[str, Any]], brief: bool = False) -> str:
         """Format multiple order records."""
