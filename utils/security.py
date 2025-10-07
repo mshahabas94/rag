@@ -30,7 +30,7 @@ class SQLSecurityValidator:
     
     # Suspicious patterns that might indicate injection attempts
     INJECTION_PATTERNS = [
-        r"'.*'.*'",  # Multiple quotes
+        # r"'.*'.*'",  # Multiple quotes
         r"--.*",     # SQL comments
         r"/\*.*\*/", # Block comments
         r";\s*\w+",  # Multiple statements

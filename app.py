@@ -16,7 +16,7 @@ from services.conversation_memory_service import PersistentConversationMemory
 
 # Page configuration
 st.set_page_config(
-    page_title="Hybrid AI Chatbot",
+    page_title=" Loaded Hybrid AI Chatbot",
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -25,8 +25,24 @@ st.set_page_config(
 # Custom CSS for better styling
 st.markdown("""
 <style>
+            
+    /* Hide top-right hamburger menu & deploy button */
+    #MainMenu {visibility: hidden;}
+    header {visibility: hidden;}
+    footer {visibility: hidden;}
+
+    /* Change whole app background */
+    .stApp {
+        background-color: #1f133c;  /* deep blue, you can change hex */
+        color: white;  /* text color for contrast */
+    }
+
+    /* Optional: Change sidebar background */
+    section[data-testid="stSidebar"] {
+        background-color: #1f133c !important;
+    }
     .user-message {
-        background-color: #e6f3ff;
+        background-color: #2f3226;
         padding: 10px 15px;
         border-radius: 15px;
         border-bottom-right-radius: 5px;
@@ -35,7 +51,7 @@ st.markdown("""
         text-align: right;
     }
     .assistant-message {
-        background-color: #f0f0f0;
+        background-color: #2f3226;
         padding: 10px 15px;
         border-radius: 15px;
         border-bottom-left-radius: 5px;
@@ -339,7 +355,7 @@ def render_sidebar():
 
 def render_main_chat():
     """Render the main chat interface."""
-    st.title("Hybrid AI Chatbot")
+    st.title("Loaded AI Chatbot")
     st.caption("Ask questions about your orders (SQL) or policies (RAG)")
     
     # Initialize chatbot if not done
