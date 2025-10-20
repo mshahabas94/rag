@@ -26,9 +26,9 @@ st.set_page_config(
 st.markdown("""
 <style>
     /* Hide Streamlit branding */
-    #MainMenu {visibility: show;}
-    header {visibility: show;}
-    footer {visibility: show;}
+    #MainMenu {visibility: hidden;}
+    header {visibility: hidden;}
+    footer {visibility: hidden;}
             
     
     
@@ -251,7 +251,32 @@ div.stForm button:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(30, 58, 138, 0.7) !important;
 }
-    
+   /* Custom Floating Sidebar Toggle Button */
+#custom-sidebar-toggle {
+    position: fixed;
+    top: 20px;
+    left: 10px;
+    z-index: 9999;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    font-size: 18px;
+}
+
+#custom-sidebar-toggle:hover {
+    transform: scale(1.1);
+    background: linear-gradient(135deg, #5a67d8 0%, #805ad5 100%);
+}
+ 
+            
+
+            
 
     
     
@@ -457,7 +482,7 @@ def render_sidebar():
             is_current = session_id == st.session_state.current_session_id
             
             # Session row with better button alignment
-            row_col1, row_col2, row_col3 = st.columns([9, 3.2, 3.2])
+            row_col1, row_col2, row_col3 = st.columns([11, 3.7, 3.7])
             
             with row_col1:
                 button_text = f"{'📌 ' if is_current else '💭 '}{session_name[:25]}{'...' if len(session_name) > 25 else ''}"
@@ -688,3 +713,36 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
+st.markdown("""
+<style>
+/* Hide toolbar / deploy button in Streamlit v1.50+ */
+
+/* Hide any element that contains "Deploy" in title or aria-label */
+header button[title*="Deploy"] {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* Hide known classes from previous versions */
+.stAppDeployButton,
+.stDeployButton,
+button.stAppDeployButton {
+    display: none !important;
+}
+
+/* Hide toolbar container if it still appears */
+header [data-testid="stToolbarActions"],
+header div[data-testid="stToolbarActions"] {
+    display: none !important;
+}
+
+/* For completeness: hide the main menu and full-screen icons if undesired */
+#MainMenu { visibility: hidden !important; }
+footer { visibility: hidden !important; }
+</style>
+""", unsafe_allow_html=True)
+
+
+
