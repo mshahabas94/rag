@@ -1,3 +1,5 @@
 .env
 llama.cpp/
 logs/
+./__pycache__/
+*.pyc

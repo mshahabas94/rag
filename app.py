@@ -16,73 +16,245 @@ from services.conversation_memory_service import PersistentConversationMemory
 
 # Page configuration
 st.set_page_config(
-    page_title=" Loaded Hybrid AI Chatbot",
+    page_title="Loaded Hybrid AI Chatbot",
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better styling
+# Modern Custom CSS
 st.markdown("""
 <style>
+    /* Hide Streamlit branding */
+    #MainMenu {visibility: show;}
+    header {visibility: show;}
+    footer {visibility: show;}
             
-    /* Hide top-right hamburger menu & deploy button */
-    #MainMenu {visibility: hidden;}
-    header {visibility: hidden;}
-    footer {visibility: hidden;}
-
-    /* Change whole app background */
+    
+    
+    /* App Background */
     .stApp {
-        background-color: #1f133c;  /* deep blue, you can change hex */
-        color: white;  /* text color for contrast */
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #ffffff;
+    }
+    header, .stApp > header, .st-emotion-cache-12fmjuu, .st-emotion-cache-1avcm0n {
+    visibility: visible !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #ffffff !important;
     }
 
-    /* Optional: Change sidebar background */
+    /* Optional: make sure any text or icons inside header are white */
+    header * {
+        color: #ffffff !important;
+    }
+    
+    /* Sidebar Styling */
     section[data-testid="stSidebar"] {
-        background-color: #1f133c !important;
+        background: linear-gradient(180deg, #2d1b4e 0%, #1a0f2e 100%) !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
     }
+    
+    section[data-testid="stSidebar"] * {
+        color: #ffffff !important;
+    }
+    
+    /* Chat Messages */
     .user-message {
-        background-color: #2f3226;
-        padding: 10px 15px;
-        border-radius: 15px;
-        border-bottom-right-radius: 5px;
-        margin: 5px 0;
-        margin-left: 20%;
-        text-align: right;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 16px 20px;
+        border-radius: 20px;
+        border-bottom-right-radius: 6px;
+        margin: 12px 0;
+        margin-left: 15%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        color: #ffffff;
+        font-size: 15px;
+        line-height: 1.6;
     }
+    
     .assistant-message {
-        background-color: #2f3226;
-        padding: 10px 15px;
-        border-radius: 15px;
-        border-bottom-left-radius: 5px;
-        margin: 5px 0;
-        margin-right: 20%;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 16px 20px;
+        border-radius: 20px;
+        border-bottom-left-radius: 6px;
+        margin: 12px 0;
+        margin-right: 15%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        color: #2d1b4e;
+        font-size: 15px;
+        line-height: 1.6;
     }
+    
+    /* Query Type Badges */
     .query-type-badge {
         display: inline-block;
-        padding: 2px 8px;
-        border-radius: 10px;
-        font-size: 0.8em;
-        font-weight: bold;
-        margin-left: 10px;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        margin-left: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
+    
     .sql-badge {
-        background-color: #d4edff;
-        color: #0066cc;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #ffffff;
     }
+    
     .rag-badge {
-        background-color: #d4f4dd;
-        color: #006600;
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: #ffffff;
     }
+    
     .hybrid-badge {
-        background-color: #ffe6d4;
-        color: #cc6600;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: #ffffff;
     }
+    
+    /* Buttons */
     .stButton button {
         width: 100%;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: none;
     }
-            
-            
+    
+    .stButton button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Session Button Styling */
+    .stButton button[kind="primary"] {
+    background: #1e3a8a !important;;
+    color: white !important;
+    border: none !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
+}
+
+    
+    
+
+    .stButton button[kind="secondary"] {
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .stButton button[kind="secondary"]:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    /* Text Input & Text Area */
+    .stTextInput input, .stTextArea textarea {
+        border-radius: 12px;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.9);
+        color: #2d1b4e;
+        font-size: 15px;
+    }
+    
+    .stTextInput input:focus, .stTextArea textarea:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    }
+    
+    /* Expander */
+    .streamlit-expanderHeader {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        font-weight: 500;
+    }
+    
+    /* Divider */
+    hr {
+        border-color: rgba(255, 255, 255, 0.2);
+        margin: 20px 0;
+    }
+    
+    /* Metrics */
+    [data-testid="stMetricValue"] {
+        font-size: 24px;
+        font-weight: 600;
+        color: #667eea;
+    }
+    
+    /* Session Buttons */
+    .session-active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    /* Title Styling */
+    h1 {
+        color: #ffffff;
+        font-weight: 700;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    h2, h3 {
+        color: #ffffff;
+        font-weight: 600;
+    }
+    
+    /* Caption */
+    .caption {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 16px;
+        margin-bottom: 30px;
+    }
+    
+    /* Code blocks */
+    code {
+        background: rgba(0, 0, 0, 0.05);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+    
+    /* Spinner */
+    .stSpinner > div {
+        border-top-color: #667eea !important;
+    }
+    
+    /* Info box */
+    .stAlert {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        border-left: 4px solid #667eea;
+    }
+    
+    /* Form */
+    .stForm {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 20px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+            div.stForm button {
+    background-color: #1e3a8a !important; /* deep navy blue */
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.5) !important;
+    transition: all 0.3s ease !important;
+}
+
+div.stForm button:hover {
+    background-color: #1e40af !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(30, 58, 138, 0.7) !important;
+}
+    
+
+    
+    
 </style>
 """, unsafe_allow_html=True)
 
@@ -155,14 +327,14 @@ def get_query_type_badge(query_type: QueryType) -> str:
         QueryType.HYBRID: "hybrid-badge"
     }.get(query_type, "sql-badge")
     
-    return f'<span class="query-type-badge {badge_class}">{query_type.value.upper()}</span>'
+    return f'<span class="query-type-badge {badge_class}">{query_type.value}</span>'
 
 def format_message(msg: Dict[str, Any], show_metadata: bool = True):
     """Format and display a chat message."""
     is_user = msg['role'] == 'user'
     
     if is_user:
-        st.markdown(f'<div class="user-message">{msg["content"]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="user-message">👤 {msg["content"]}</div>', unsafe_allow_html=True)
     else:
         # Assistant message with metadata
         content = msg['content']
@@ -171,32 +343,32 @@ def format_message(msg: Dict[str, Any], show_metadata: bool = True):
         if show_metadata and 'metadata' in msg and 'query_type' in msg['metadata']:
             query_type = msg['metadata']['query_type']
             badge = get_query_type_badge(QueryType(query_type))
-            st.markdown(f'<div class="assistant-message">{content} {badge}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="assistant-message">🤖 {content} {badge}</div>', unsafe_allow_html=True)
         else:
-            st.markdown(f'<div class="assistant-message">{content}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="assistant-message">🤖 {content}</div>', unsafe_allow_html=True)
         
         # Show additional metadata in expander
         if show_metadata and 'metadata' in msg:
             metadata = msg['metadata']
             
-            with st.expander("View Details", expanded=False):
+            with st.expander("📊 View Details", expanded=False):
                 col1, col2 = st.columns(2)
                 
                 with col1:
                     if 'processing_time' in metadata:
-                        st.metric("Processing Time", f"{metadata['processing_time']:.2f}s")
+                        st.metric("⚡ Processing Time", f"{metadata['processing_time']:.2f}s")
                     if 'confidence' in metadata:
-                        st.metric("Confidence", f"{metadata['confidence']:.2%}")
+                        st.metric("🎯 Confidence", f"{metadata['confidence']:.2%}")
                 
                 with col2:
                     if 'sql_query' in metadata and metadata['sql_query']:
-                        st.text("SQL Query:")
+                        st.text("📝 SQL Query:")
                         st.code(metadata['sql_query'], language='sql')
                     
                     if 'sources' in metadata and metadata['sources']:
-                        st.text("Sources:")
+                        st.text("📚 Sources:")
                         for source in metadata['sources']:
-                            st.markdown(f"- {source.get('filename', 'Unknown')}")
+                            st.markdown(f"• {source.get('filename', 'Unknown')}")
 
 async def process_user_message(user_input: str):
     """Process user message through the hybrid chatbot."""
@@ -206,12 +378,10 @@ async def process_user_message(user_input: str):
         if st.session_state.conversation_memory:
             memory_vars = st.session_state.conversation_memory.load_memory_variables({})
             if 'history' in memory_vars:
-                # Convert to list of dicts if it's messages
                 history_messages = memory_vars['history']
                 if isinstance(history_messages, str):
                     conversation_history = history_messages
                 else:
-                    # Convert LangChain messages to simple format
                     conversation_history = []
                     for msg in history_messages:
                         conversation_history.append({
@@ -241,41 +411,43 @@ async def process_user_message(user_input: str):
 def render_sidebar():
     """Render the sidebar with session management and settings."""
     with st.sidebar:
-        st.title("Chat Sessions")
+        st.title("💬 Chat Sessions")
         
         # Customer information section
-        with st.expander("Customer Info", expanded=False):
+        with st.expander("👤 Customer Info", expanded=False):
             st.session_state.customer_id = st.text_input(
                 "Customer ID",
                 value=st.session_state.customer_id or "",
-                help="Optional: For personalized database queries"
+                help="Optional: For personalized database queries",
+                placeholder="Enter your customer ID"
             )
             st.session_state.customer_email = st.text_input(
                 "Customer Email",
                 value=st.session_state.customer_email or "",
-                help="Optional: For personalized database queries"
+                help="Optional: For personalized database queries",
+                placeholder="your.email@example.com"
             )
         
         st.divider()
         
         # New session button
-        col1, col2 = st.columns([3, 1])
+        col1, col2 = st.columns([4, 1])
         with col1:
-            if st.button("New Chat", use_container_width=True):
+            if st.button("➕ New Chat", use_container_width=True, type="primary"):
                 create_new_session()
                 st.rerun()
         with col2:
-            if st.button("🔄", help="Refresh sessions"):
+            if st.button("🔄", help="Refresh sessions", use_container_width=True):
                 st.rerun()
         
         st.divider()
         
         # Session list
-        st.subheader("Recent Sessions")
+        st.subheader("📋 Recent Sessions")
         sessions = chat_db_service.get_all_sessions()
         
         if not sessions:
-            st.info("No sessions yet. Create a new chat to get started!")
+            st.info("No sessions yet. Create a new chat to get started! 🚀")
         
         for session in sessions:
             session_id = session['session_id']
@@ -284,12 +456,13 @@ def render_sidebar():
             # Check if this is the current session
             is_current = session_id == st.session_state.current_session_id
             
-            # Session row
-            col1, col2, col3 = st.columns([5, 1, 1])
+            # Session row with better button alignment
+            row_col1, row_col2, row_col3 = st.columns([9, 3.2, 3.2])
             
-            with col1:
+            with row_col1:
+                button_text = f"{'📌 ' if is_current else '💭 '}{session_name[:25]}{'...' if len(session_name) > 25 else ''}"
                 if st.button(
-                    f"{'📌 ' if is_current else ''}{session_name}",
+                    button_text,
                     key=f"session_{session_id}",
                     use_container_width=True,
                     type="primary" if is_current else "secondary"
@@ -297,12 +470,12 @@ def render_sidebar():
                     load_session(session_id)
                     st.rerun()
             
-            with col2:
-                if st.button("✏️", key=f"edit_{session_id}", help="Rename"):
+            with row_col2:
+                if st.button("✏️", key=f"edit_{session_id}", help="Rename", use_container_width=True):
                     st.session_state[f'rename_{session_id}'] = True
             
-            with col3:
-                if st.button("🗑️", key=f"delete_{session_id}", help="Delete"):
+            with row_col3:
+                if st.button("🗑️", key=f"delete_{session_id}", help="Delete", use_container_width=True):
                     if chat_db_service.delete_session(session_id):
                         if session_id == st.session_state.current_session_id:
                             st.session_state.current_session_id = None
@@ -310,33 +483,36 @@ def render_sidebar():
                             st.session_state.conversation_memory = None
                         st.rerun()
             
-            # Rename dialog
+            # Rename dialog - placed below the session row for better layout
             if st.session_state.get(f'rename_{session_id}', False):
+                st.markdown("---")
                 new_name = st.text_input(
-                    "New name:",
+                    "Rename session:",
                     value=session_name,
-                    key=f"rename_input_{session_id}"
+                    key=f"rename_input_{session_id}",
+                    placeholder="Enter new session name"
                 )
-                col_a, col_b = st.columns(2)
-                with col_a:
-                    if st.button("Save", key=f"save_{session_id}"):
-                        chat_db_service.update_session_name(session_id, new_name)
+                rename_col1, rename_col2 = st.columns(2)
+                with rename_col1:
+                    if st.button("💾 Save", key=f"save_{session_id}", use_container_width=True):
+                        if new_name.strip():
+                            chat_db_service.update_session_name(session_id, new_name.strip())
                         st.session_state[f'rename_{session_id}'] = False
                         st.rerun()
-                with col_b:
-                    if st.button("Cancel", key=f"cancel_{session_id}"):
+                with rename_col2:
+                    if st.button("❌ Cancel", key=f"cancel_{session_id}", use_container_width=True):
                         st.session_state[f'rename_{session_id}'] = False
                         st.rerun()
+                st.markdown("---")
         
         st.divider()
         
         # Health status
-        with st.expander("System Status"):
+        with st.expander("🏥 System Status", expanded=False):
             try:
                 chatbot = get_chatbot()
                 health = chatbot.get_health_status()
             except:
-                # If chatbot not initialized, show error state
                 health = type('obj', (object,), {
                     'status': 'error',
                     'database_healthy': False,
@@ -345,30 +521,32 @@ def render_sidebar():
                     'uptime': 0
                 })()
             
-            st.metric("Status", health.status.upper())
+            status_emoji = "🟢" if health.status == "healthy" else "🔴"
+            st.metric("Status", f"{status_emoji} {health.status.upper()}")
             
             col1, col2 = st.columns(2)
             with col1:
-                st.write("Database:", "✅" if health.database_healthy else "❌")
-                st.write("Vanna (SQL):", "✅" if health.vanna_healthy else "❌")
+                st.write("🗄️ Database:", "✅" if health.database_healthy else "❌")
+                st.write("🔍 Vanna (SQL):", "✅" if health.vanna_healthy else "❌")
             with col2:
-                st.write("RAG:", "✅" if health.rag_healthy else "❌")
-                st.write(f"Uptime: {health.uptime:.0f}s")
-
+                st.write("📚 RAG:", "✅" if health.rag_healthy else "❌")
+                st.write(f"⏱️ Uptime: {health.uptime:.0f}s")
 def render_main_chat():
     """Render the main chat interface."""
-    st.title("Loaded AI Chatbot")
-    st.caption("Ask questions about your orders (SQL) or policies (RAG)")
+    st.title("🤖 Loaded AI Chatbot")
+    st.markdown('<p class="caption">Ask questions about your orders (SQL) or policies (RAG)</p>', unsafe_allow_html=True)
     
     # Initialize chatbot if not done
     if not st.session_state.initialized:
-        with st.spinner("Initializing chatbot..."):
+        with st.spinner("🚀 Initializing chatbot..."):
             try:
                 get_chatbot()
                 st.session_state.initialized = True
-                st.success("Chatbot initialized successfully!")
+                st.success("✅ Chatbot initialized successfully!")
+                time.sleep(1)
+                st.rerun()
             except Exception as e:
-                st.error(f"Failed to initialize chatbot: {e}")
+                st.error(f"❌ Failed to initialize chatbot: {e}")
                 return
     
     # Create first session if none exists
@@ -379,11 +557,14 @@ def render_main_chat():
         else:
             create_new_session()
     
-    # Chat container
+    # Chat container with better spacing
     chat_container = st.container()
     
     # Display chat history
     with chat_container:
+        if not st.session_state.chat_history:
+            st.info("👋 Welcome! Start a conversation by typing a message below.")
+        
         for msg in st.session_state.chat_history:
             format_message(msg)
     
@@ -391,20 +572,21 @@ def render_main_chat():
     st.divider()
     
     with st.form(key="chat_input", clear_on_submit=True):
-        col1, col2 = st.columns([6, 1])
+        col1, col2 = st.columns([5, 1])
         
         with col1:
             user_input = st.text_area(
                 "Your message:",
                 key="user_message",
                 height=100,
-                placeholder="Ask about orders, policies, or general information..."
+                placeholder="Type your question here... (e.g., 'Show my recent orders' or 'What's your return policy?')",
+                label_visibility="collapsed"
             )
         
         with col2:
-            st.write("")  # Spacing
-            st.write("")  # Spacing
-            submit_button = st.form_submit_button("Send", use_container_width=True)
+            st.write("")
+            st.write("")
+            submit_button = st.form_submit_button("📤 Send", use_container_width=True, type="primary")
         
         if submit_button and user_input:
             # Add user message to UI immediately
@@ -415,7 +597,7 @@ def render_main_chat():
             
             # Show typing indicator
             with chat_container:
-                with st.spinner("Processing..."):
+                with st.spinner("🤔 Thinking..."):
                     # Process message
                     response = asyncio.run(process_user_message(user_input))
                     
@@ -452,33 +634,32 @@ def render_main_chat():
                         error_msg = response.error if response else "Unknown error"
                         st.session_state.chat_history.append({
                             'role': 'assistant',
-                            'content': f"I encountered an error: {error_msg}",
+                            'content': f"⚠️ I encountered an error: {error_msg}",
                             'metadata': {}
                         })
             
-            # Force refresh
             st.rerun()
     
     # Help section
-    with st.expander("How to use this chatbot"):
+    with st.expander("❓ How to use this chatbot", expanded=False):
         st.markdown("""
-        This hybrid chatbot can answer:
+        ### This hybrid chatbot can answer:
         
         **📊 SQL Queries (Database)**
-        - "Show my recent orders"
-        - "What's the status of order #12345?"
-        - "How much did I spend last month?"
+        - *"Show my recent orders"*
+        - *"What's the status of order #12345?"*
+        - *"How much did I spend last month?"*
         
         **📚 RAG Queries (Knowledge Base)**
-        - "What's your return policy?"
-        - "How do I track my shipment?"
-        - "What payment methods do you accept?"
+        - *"What's your return policy?"*
+        - *"How do I track my shipment?"*
+        - *"What payment methods do you accept?"*
         
         **🔀 Hybrid Queries (Both)**
-        - "Can I return order #12345?"
-        - "Show my orders and explain the refund policy"
+        - *"Can I return order #12345?"*
+        - *"Show my orders and explain the refund policy"*
         
-        *Tip: Provide your Customer ID or Email in the sidebar for personalized results!*
+        > 💡 **Tip:** Provide your Customer ID or Email in the sidebar for personalized results!
         """)
 
 def main():
@@ -488,3 +669,22 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+st.markdown("""
+<style>
+/* Make Customer ID and Email text inputs visible in sidebar */
+[data-testid="stSidebar"] input[type="text"], 
+[data-testid="stSidebar"] input[type="email"] {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    color: #000000 !important;           /* Black text for readability */
+    border: 1px solid #ccc !important;
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+}
+
+/* Placeholder styling */
+[data-testid="stSidebar"] input::placeholder {
+    color: rgba(0, 0, 0, 0.6) !important;
+}
+</style>
+""", unsafe_allow_html=True)
