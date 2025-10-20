@@ -81,6 +81,8 @@ st.markdown("""
     .stButton button {
         width: 100%;
     }
+            
+            
 </style>
 """, unsafe_allow_html=True)
 
